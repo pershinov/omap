@@ -8,7 +8,7 @@ Ordered map implementation using generics, native map and linked list.
 ### Get the go-lib module
 
 ```bash
-go get github.com/pershinov/omap@v1.0.0
+go get github.com/pershinov/omap@v1.0.1
 ```
 
 ### Example
