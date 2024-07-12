@@ -72,10 +72,23 @@ func (om *Omap[K, T]) Delete(key K) bool {
 	}
 
 	if v.next != nil {
+		if v == om.first {
+			om.first = v.next
+		}
 		v.next.prev = v.prev
 	}
 	if v.prev != nil {
+		if v == om.last {
+			om.last = v.prev
+		}
 		v.prev.next = v.next
+	}
+
+	if v == om.first {
+		om.first = nil
+	}
+	if v == om.last {
+		om.last = nil
 	}
 
 	delete(om.m, key)
