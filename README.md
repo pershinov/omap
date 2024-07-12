@@ -1,6 +1,7 @@
 # omap
 
 Ordered map implementation using generics, native map and linked list.
+
 ! NO cuncurent safe. Use mutex for concurrent rw.
 
 ## Usage
