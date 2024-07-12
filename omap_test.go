@@ -213,4 +213,62 @@ func TestOmap(t *testing.T) {
 			assert.Equal(t, -1, cnt)
 		})
 	})
+
+	t.Run("delete corner", func(t *testing.T) {
+		om := New[string, int]().WithCap(10)
+
+		// Set
+		om.Set("test", 1)
+		om.Set("test2", 10)
+		om.Set("test3", 12)
+		om.Set("test4", 123)
+
+		// Len
+		assert.Equal(t, 4, om.Len())
+
+		// Delete
+		ok := om.Delete("test")
+		assert.True(t, ok)
+
+		ok = om.Delete("test4")
+		assert.True(t, ok)
+
+		// Len
+		assert.Equal(t, 2, om.Len())
+
+		// Cases
+		cases := map[int]struct {
+			expectedKey   string
+			expectedValue int
+		}{
+			0: {
+				expectedKey:   "test2",
+				expectedValue: 10,
+			},
+			1: {
+				expectedKey:   "test3",
+				expectedValue: 12,
+			},
+		}
+
+		t.Run("forward", func(t *testing.T) {
+			cnt := 0
+			om.Iter(func(key string, value int) {
+				assert.Equal(t, cases[cnt].expectedKey, key)
+				assert.Equal(t, cases[cnt].expectedValue, value)
+				cnt++
+			})
+			assert.Equal(t, 2, cnt)
+		})
+
+		t.Run("backward", func(t *testing.T) {
+			cnt := 1
+			om.IterBack(func(key string, value int) {
+				assert.Equal(t, cases[cnt].expectedKey, key)
+				assert.Equal(t, cases[cnt].expectedValue, value)
+				cnt--
+			})
+			assert.Equal(t, -1, cnt)
+		})
+	})
 }
