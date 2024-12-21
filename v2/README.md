@@ -19,7 +19,7 @@ package main
 import (
 	"fmt"
 	
-	"github.com/pershinov/omap"
+	"github.com/pershinov/omap/v2"
 )
 
 func main() {
