@@ -37,7 +37,6 @@ func (om *Omap[K, T]) WithCap(c int) *Omap[K, T] {
 // Len - return len for existing Omap entity
 func (om *Omap[K, T]) Len() int {
 	if om == nil {
-		log.Log(log.SeverityCritical, ErrIsntInited.Error(), "omap.Len()")
 		return 0
 	}
 
@@ -47,7 +46,7 @@ func (om *Omap[K, T]) Len() int {
 // Get - get data by key in Comma Ok
 func (om *Omap[K, T]) Get(key K) (T, bool) {
 	if om == nil {
-		log.Log(log.SeverityCritical, ErrIsntInited.Error(), "omap.Get()")
+		log.Log(log.SeverityError, ErrIsntInited.Error(), "omap.Get()")
 		return omapItem[K, T]{}.data, false
 	}
 
@@ -91,7 +90,7 @@ func (om *Omap[K, T]) Set(key K, value T) {
 // true - if deletion was successful
 func (om *Omap[K, T]) Delete(key K) bool {
 	if om == nil {
-		log.Log(log.SeverityCritical, ErrIsntInited.Error(), "omap.Delete()")
+		log.Log(log.SeverityError, ErrIsntInited.Error(), "omap.Delete()")
 		return false
 	}
 
