@@ -71,20 +71,22 @@ func TestOmap(t *testing.T) {
 
 		t.Run("forward", func(t *testing.T) {
 			cnt := 0
-			om.Iter(func(key string, value int) {
+			om.Iter(func(key string, value int) bool {
 				assert.Equal(t, cases[cnt].expectedKey, key)
 				assert.Equal(t, cases[cnt].expectedValue, value)
 				cnt++
+				return true
 			})
 			assert.Equal(t, 4, cnt)
 		})
 
 		t.Run("backward", func(t *testing.T) {
 			cnt := 3
-			om.IterBack(func(key string, value int) {
+			om.IterBack(func(key string, value int) bool {
 				assert.Equal(t, cases[cnt].expectedKey, key)
 				assert.Equal(t, cases[cnt].expectedValue, value)
 				cnt--
+				return true
 			})
 			assert.Equal(t, -1, cnt)
 		})
@@ -133,20 +135,22 @@ func TestOmap(t *testing.T) {
 
 		t.Run("forward", func(t *testing.T) {
 			cnt := 0
-			om.Iter(func(key string, value int) {
+			om.Iter(func(key string, value int) bool {
 				assert.Equal(t, cases[cnt].expectedKey, key)
 				assert.Equal(t, cases[cnt].expectedValue, value)
 				cnt++
+				return true
 			})
 			assert.Equal(t, 3, cnt)
 		})
 
 		t.Run("backward", func(t *testing.T) {
 			cnt := 2
-			om.IterBack(func(key string, value int) {
+			om.IterBack(func(key string, value int) bool {
 				assert.Equal(t, cases[cnt].expectedKey, key)
 				assert.Equal(t, cases[cnt].expectedValue, value)
 				cnt--
+				return true
 			})
 			assert.Equal(t, -1, cnt)
 		})
@@ -196,20 +200,22 @@ func TestOmap(t *testing.T) {
 
 		t.Run("forward", func(t *testing.T) {
 			cnt := 0
-			om.Iter(func(key string, value int) {
+			om.Iter(func(key string, value int) bool {
 				assert.Equal(t, cases[cnt].expectedKey, key)
 				assert.Equal(t, cases[cnt].expectedValue, value)
 				cnt++
+				return true
 			})
 			assert.Equal(t, 3, cnt)
 		})
 
 		t.Run("backward", func(t *testing.T) {
 			cnt := 2
-			om.IterBack(func(key string, value int) {
+			om.IterBack(func(key string, value int) bool {
 				assert.Equal(t, cases[cnt].expectedKey, key)
 				assert.Equal(t, cases[cnt].expectedValue, value)
 				cnt--
+				return true
 			})
 			assert.Equal(t, -1, cnt)
 		})
@@ -254,22 +260,89 @@ func TestOmap(t *testing.T) {
 
 		t.Run("forward", func(t *testing.T) {
 			cnt := 0
-			om.Iter(func(key string, value int) {
+			om.Iter(func(key string, value int) bool {
 				assert.Equal(t, cases[cnt].expectedKey, key)
 				assert.Equal(t, cases[cnt].expectedValue, value)
 				cnt++
+				return true
 			})
 			assert.Equal(t, 2, cnt)
 		})
 
 		t.Run("backward", func(t *testing.T) {
 			cnt := 1
-			om.IterBack(func(key string, value int) {
+			om.IterBack(func(key string, value int) bool {
 				assert.Equal(t, cases[cnt].expectedKey, key)
 				assert.Equal(t, cases[cnt].expectedValue, value)
 				cnt--
+				return true
 			})
 			assert.Equal(t, -1, cnt)
 		})
 	})
+
+	t.Run("errors", func(t *testing.T) {
+		var om *Omap[string, string]
+
+		// Get
+		v, ok := om.Get("test")
+		assert.False(t, ok)
+		assert.Equal(t, "", v)
+
+		// Delete
+		ok = om.Delete("test")
+		assert.False(t, ok)
+
+		// Len
+		assert.Equal(t, 0, om.Len())
+
+		t.Run("panics", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				defer func() {
+					e := recover()
+					err, ok := e.(error)
+					assert.True(t, ok)
+					assert.ErrorIs(t, ErrIsntInited, err)
+				}()
+
+				om.Set("test", "test")
+			})
+			t.Run("replace", func(t *testing.T) {
+				defer func() {
+					e := recover()
+					err, ok := e.(error)
+					assert.True(t, ok)
+					assert.ErrorIs(t, ErrIsntInited, err)
+				}()
+
+				om.Replace("test", "test")
+			})
+			t.Run("iter", func(t *testing.T) {
+				defer func() {
+					e := recover()
+					err, ok := e.(error)
+					assert.True(t, ok)
+					assert.ErrorIs(t, ErrIsntInited, err)
+				}()
+
+				om.Iter(func(key string, value string) bool {
+					return true
+				})
+			})
+
+			t.Run("iter back", func(t *testing.T) {
+				defer func() {
+					e := recover()
+					err, ok := e.(error)
+					assert.True(t, ok)
+					assert.ErrorIs(t, ErrIsntInited, err)
+				}()
+
+				om.IterBack(func(key string, value string) bool {
+					return true
+				})
+			})
+		})
+	})
+
 }

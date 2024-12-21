@@ -1,8 +1,11 @@
-module github.com/pershinov/omap
+module github.com/pershinov/omap/v2
 
 go 1.22.2
 
-require github.com/stretchr/testify v1.10.0
+require (
+	github.com/pershinov/scrgobbler v1.0.0
+	github.com/stretchr/testify v1.10.0
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
