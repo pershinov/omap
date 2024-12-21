@@ -9,7 +9,7 @@ Ordered map implementation using generics, native map and linked list.
 ### Get the go-lib module
 
 ```bash
-go get github.com/pershinov/omap@v1.0.3
+go get github.com/pershinov/omap@v2.0.0
 ```
 
 ### Example
@@ -45,12 +45,14 @@ func main() {
 	ok = om.Delete("test")
 	fmt.Println(ok) // true
 
-	om.Iter(func(key string, value int) {
+	om.Iter(func(key string, value int) bool {
 		fmt.Println(key, value)
+		return true
 	})
 
-	om.IterBack(func(key string, value int) {
+	om.IterBack(func(key string, value int) bool {
 		fmt.Println(key, value)
+		return true
 	})
 }
 

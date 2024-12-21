@@ -1,5 +1,13 @@
 package omap
 
+import (
+	"errors"
+
+	log "github.com/pershinov/scrgobbler"
+)
+
+var ErrIsntInited error = errors.New("omap isn't inited, use omap.New()")
+
 type Omap[K comparable, T any] struct {
 	m map[K]*omapItem[K, T]
 
@@ -28,21 +36,37 @@ func (om *Omap[K, T]) WithCap(c int) *Omap[K, T] {
 
 // Len - return len for existing Omap entity
 func (om *Omap[K, T]) Len() int {
+	if om == nil {
+		log.Log(log.SeverityCritical, ErrIsntInited.Error(), "omap.Len()")
+		return 0
+	}
+
 	return len(om.m)
 }
 
 // Get - get data by key in Comma Ok
 func (om *Omap[K, T]) Get(key K) (T, bool) {
+	if om == nil {
+		log.Log(log.SeverityCritical, ErrIsntInited.Error(), "omap.Get()")
+		return omapItem[K, T]{}.data, false
+	}
+
 	v, ok := om.m[key]
 	if !ok {
 		return omapItem[K, T]{}.data, ok
 	}
+
 	return v.data, ok
 }
 
 // Set - set data with key
 // if key already exists, deleting the key and set new object to the end of the list
 func (om *Omap[K, T]) Set(key K, value T) {
+	if om == nil {
+		log.Log(log.SeverityCritical, ErrIsntInited.Error(), "omap.Set()")
+		panic(ErrIsntInited)
+	}
+
 	om.Delete(key)
 
 	oi := &omapItem[K, T]{
@@ -66,6 +90,11 @@ func (om *Omap[K, T]) Set(key K, value T) {
 // Delete - delete data by key, returning bool
 // true - if deletion was successful
 func (om *Omap[K, T]) Delete(key K) bool {
+	if om == nil {
+		log.Log(log.SeverityCritical, ErrIsntInited.Error(), "omap.Delete()")
+		return false
+	}
+
 	v, ok := om.m[key]
 	if !ok {
 		return false
@@ -101,6 +130,11 @@ func (om *Omap[K, T]) Delete(key K) bool {
 // true - if replace was successful
 // false - if no replace and set
 func (om *Omap[K, T]) Replace(key K, value T) bool {
+	if om == nil {
+		log.Log(log.SeverityCritical, ErrIsntInited.Error(), "omap.Replace()")
+		panic(ErrIsntInited)
+	}
+
 	v, ok := om.m[key]
 	if !ok {
 		return false
@@ -112,22 +146,38 @@ func (om *Omap[K, T]) Replace(key K, value T) bool {
 
 // Iter - ordered forward iter
 // accepting key-value func
-func (om *Omap[K, T]) Iter(f func(key K, value T)) {
+func (om *Omap[K, T]) Iter(f func(key K, value T) bool) {
+	if om == nil {
+		log.Log(log.SeverityCritical, ErrIsntInited.Error(), "omap.Iter()")
+		panic(ErrIsntInited)
+	}
+
 	if om.first == nil {
 		return
 	}
+
 	for e := om.first; e != nil; e = e.next {
-		f(e.key, e.data)
+		if !f(e.key, e.data) {
+			break
+		}
 	}
 }
 
 // IterBack - ordered backward iter
 // accepting key-value func
-func (om *Omap[K, T]) IterBack(f func(key K, value T)) {
+func (om *Omap[K, T]) IterBack(f func(key K, value T) bool) {
+	if om == nil {
+		log.Log(log.SeverityCritical, ErrIsntInited.Error(), "omap.IterBack()")
+		panic(ErrIsntInited)
+	}
+
 	if om.last == nil {
 		return
 	}
+
 	for e := om.last; e != nil; e = e.prev {
-		f(e.key, e.data)
+		if !f(e.key, e.data) {
+			break
+		}
 	}
 }
